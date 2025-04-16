@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Room Test Client</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h2>Enter Room 테스트</h2>
+    <input type="text" id="roomName" placeholder="Room Name 입력" />
+    <button onclick="createRoom()">Create Room</button>
+    <input type="text" id="roomId" placeholder="Room ID 입력" />
+    <button onclick="enterRoom()">Enter Room</button>
+    <button onclick="fetchRoomList()">Fetch Room List</button> <!-- Room 목록 가져오기 버튼 추가 -->
+
+    <h3>로그</h3>
+    <pre id="log"></pre>
+
+    <h3>Room 목록</h3>
+    <ul id="roomList"></ul> <!-- 방 목록을 출력할 엘리먼트 추가 -->
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000'; // 서버 주소를 상수로 정의
+        const socket = io(SERVER_URL); // 서버 URL 사용
+
+        socket.on('connect', () => {
+            log(`✅ Connected: ${socket.id}`);
+        });
+
+        socket.on('disconnect', () => {
+            log('❌ Disconnected from server');
+        });
+
+        socket.on('roomMembers', (members) => {
+            log(`👥 방 멤버 목록: ${members.join(', ')}`);
+        });
+
+        // 서버로부터 받은 메시지 출력
+        socket.onAny((event, payload) => {
+            log(`📩 [서버 응답] ${event}: ${JSON.stringify(payload)}`);
+        });
+
+        function createRoom() {
+            const roomName = document.getElementById('roomName').value;
+            socket.emit('createRoom', { name: roomName });
+            log(`🚀 Sent createRoom with name: ${roomName}`);
+        }
+
+        function enterRoom() {
+            const roomId = document.getElementById('roomId').value;
+            socket.emit('enterRoom', { id: roomId });
+            log(`🚀 Sent enterRoom with id: ${roomId}`);
+        }
+
+        function fetchRoomList() {
+            fetch(`${SERVER_URL}/room/get_rooms`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ })
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((rooms) => {
+                    log(`📋 Fetched Room List: ${JSON.stringify(rooms)}`);
+                    updateRoomList(rooms);
+                })
+                .catch((error) => {
+                    log(`❌ Failed to fetch room list: ${error.message}`);
+                });
+        }
+
+        function log(message) {
+            const logBox = document.getElementById('log');
+            logBox.textContent += message + '\n';
+        }
+
+        function updateRoomList(rooms) {
+            const roomList = document.getElementById('roomList');
+            roomList.innerHTML = ''; // 기존 목록 초기화
+            rooms.forEach((room) => {
+                const li = document.createElement('li');
+                li.textContent = room;
+                roomList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+
+</html>
