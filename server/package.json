@@ -72,6 +72,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@root(.*)$": "<rootDir>/$1",
+      "^@common(.*)$": "<rootDir>/common/$1",
+      "^@game(.*)$": "<rootDir>/game/$1"
+    }
   }
 }

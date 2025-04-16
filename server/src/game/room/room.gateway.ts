@@ -3,7 +3,6 @@ import { Socket } from 'socket.io';
 import { Room } from './room.schema';
 import { RoomService } from './room.service';
 
-// chat.gateway.ts
 @WebSocketGateway()
 export class RoomGateway {
   constructor(private readonly roomService: RoomService) {}
