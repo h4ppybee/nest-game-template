@@ -22,7 +22,7 @@
     <ul id="roomList"></ul> <!-- 방 목록을 출력할 엘리먼트 추가 -->
 
     <script>
-        const SERVER_URL = 'http://localhost:3000'; // 서버 주소를 상수로 정의
+        const SERVER_URL = 'http://localhost:4000'; // 서버 주소를 상수로 정의
         const socket = io(SERVER_URL); // 서버 URL 사용
 
         socket.on('connect', () => {
@@ -55,8 +55,7 @@
         }
 
         function fetchRoomList() {
-            fetch(`${SERVER_URL}/room/get_rooms`, {
-                method: 'POST',
+            axios.post(`${SERVER_URL}/room/get_rooms`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
