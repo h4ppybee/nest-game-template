@@ -23,7 +23,7 @@
 
 ## Description
 
-Hot potato game Server🥔🔥
+Nest Game Server
 
 ## Project setup
 
