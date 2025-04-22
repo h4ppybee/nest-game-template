@@ -28,7 +28,6 @@ export class RoomService {
       createdAt: now,
       updatedAt: now,
     };
-
     this.rooms.set(roomId, newRoom);
     return newRoom;
   }
@@ -85,15 +84,19 @@ export class RoomService {
   /**
    * 방에서 나가기
    */
-  leaveRoom(roomId: string, playerId: string): Room {
-    const room = this.getRoomOrFail(roomId);
-    const idx = room.members.indexOf(playerId);
-    if (idx !== -1) {
-      room.members.splice(idx, 1);
-      room.updatedAt = new Date();
-      this.rooms.set(roomId, room);
+  leaveRoom(roomId: string, clientId: string): void {
+    const room = this.findRoom(roomId);
+    if (!room) {
+      return;
     }
-    return room;
+
+    // 방의 멤버 목록에서 클라이언트 제거
+    room.members = room.members.filter((member) => member !== clientId);
+
+    // 방이 비어 있으면 삭제
+    if (room.members.length === 0) {
+      this.rooms.delete(roomId);
+    }
   }
 
   /**
